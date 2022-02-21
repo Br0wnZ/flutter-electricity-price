@@ -15,7 +15,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final Map<int, Color> colorCodes = {
+  final  Map<int, Color> colorCodes = {
       50: Color.fromRGBO(147, 205, 72, .1),
       100: Color.fromRGBO(147, 205, 72, .2),
       200: Color.fromRGBO(147, 205, 72, .3),
