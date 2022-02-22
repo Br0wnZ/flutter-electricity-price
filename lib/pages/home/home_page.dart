@@ -173,37 +173,39 @@ class HomePage extends StatelessWidget {
   Container _hourlyPrices(BuildContext context, AsyncSnapshot snapshot) =>
       Container(
         child: Expanded(
-          child: ListView.builder(
-            itemCount: snapshot.data[0].length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                  height: MediaQuery.of(context).size.height * .04,
-                  color:
-                      snapshot.data[0][index].price == snapshot.data[1]['min']
-                          ? Colors.amber
-                          : Colors.transparent,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(),
-                      Icon(
-                        Icons.watch_later_outlined,
-                        color: snapshot.data[0][index].isCheap
-                            ? Colors.green[500]
-                            : Colors.red[300],
-                      ),
-                      _formatHour(snapshot.data[0][index].hour),
-                      Text(
-                        '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
-                        style: TextStyle(
-                            color: snapshot.data[0][index].isCheap
-                                ? Colors.green[500]
-                                : Colors.red[300]),
-                      ),
-                      Container()
-                    ],
-                  ));
-            },
+          child: Scrollbar(
+            child: ListView.builder(
+              itemCount: snapshot.data[0].length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                    height: MediaQuery.of(context).size.height * .04,
+                    color:
+                        snapshot.data[0][index].price == snapshot.data[1]['min']
+                            ? Colors.amber
+                            : Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(),
+                        Icon(
+                          Icons.watch_later_outlined,
+                          color: snapshot.data[0][index].isCheap
+                              ? Colors.green[500]
+                              : Colors.red[300],
+                        ),
+                        _formatHour(snapshot.data[0][index].hour),
+                        Text(
+                          '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
+                          style: TextStyle(
+                              color: snapshot.data[0][index].isCheap
+                                  ? Colors.green[500]
+                                  : Colors.red[300]),
+                        ),
+                        Container()
+                      ],
+                    ));
+              },
+            ),
           ),
         ),
       );
