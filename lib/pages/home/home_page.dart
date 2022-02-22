@@ -17,9 +17,7 @@ class HomePage extends StatelessWidget {
       initialData: [],
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[Expanded(child: _loadShimmer(context))]);
+          return Container();
         }
         if (snapshot.hasData) {
           return Scaffold(
@@ -193,7 +191,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Text(
-            '${snapshot.data[3]['price'] / 1000} €/kvh',
+            '${snapshot.data[3]['price'] / 1000} €/kwh',
             style: TextStyle(fontSize: 24.0, color: Colors.lightBlue),
           )
         ],
@@ -210,7 +208,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
               ),
               Text(
-                '${snapshot.data[1]['min'] / 1000} €/kvh',
+                '${snapshot.data[1]['min'] / 1000} €/kwh',
                 style: TextStyle(fontSize: 24.0, color: Colors.green),
               ),
               _formatHour(snapshot.data[1]['minHour']),
@@ -224,7 +222,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
               ),
               Text(
-                '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kvh',
+                '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kwh',
                 style: TextStyle(fontSize: 24.0, color: Colors.red),
               ),
               _formatHour(snapshot.data[1]['maxHour']),
