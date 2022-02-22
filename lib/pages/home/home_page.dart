@@ -1,5 +1,6 @@
 import 'package:electricity_price/services/api_service.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,8 +17,9 @@ class HomePage extends StatelessWidget {
       initialData: [],
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-          );
+          return Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[Expanded(child: _loadShimmer(context))]);
         }
         if (snapshot.hasData) {
           return Scaffold(
@@ -32,6 +34,68 @@ class HomePage extends StatelessWidget {
 
   AppBar _buildAppBar(String dateTime) =>
       AppBar(elevation: 8.0, title: Text('Precio para $dateTime'));
+
+  Shimmer _loadShimmer(BuildContext context) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        enabled: true,
+        child: Column(
+          children: [
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * .01)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * .03),
+              height: MediaQuery.of(context).size.height * 0.1,
+              color: Colors.white,
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * .02)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * .02),
+              height: MediaQuery.of(context).size.height * 0.1,
+              color: Colors.white,
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * .02)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width * .03),
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * .4,
+                  color: Colors.white,
+                ),
+                Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.height * .02)),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width * .03),
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * .4,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: MediaQuery.of(context).size.height * .02)),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * .03),
+              height: MediaQuery.of(context).size.height * 0.5,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      );
 
   Container _buildBody(BuildContext context, AsyncSnapshot snapshot) =>
       Container(
