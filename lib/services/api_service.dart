@@ -1,26 +1,15 @@
 import 'dart:convert' as convert;
-import 'dart:math';
 import 'package:http/http.dart' as http;
 
 import 'package:electricity_price/models/price.dart';
 
 abstract class ApiService {
-  Future<dynamic> getData();
+  Future<dynamic> getAllData();
   Future<dynamic> getAveragePrice();
 }
 
 class HttpService implements ApiService {
   var url = 'https://api.preciodelaluz.org/v1/prices/all?zone=PCB';
-  Future<dynamic> getData() async {
-    var response = await http.get(Uri.parse(url));
-    var jsonResponse = convert.jsonDecode(response.body) as dynamic;
-    List<Price> array = [];
-    for (var item in jsonResponse.values) {
-      array.add(Price.fromJson(item));
-    }
-    var res = await getAllData();
-    return res;
-  }
 
   Future<dynamic> getAveragePrice() async {
     var url = 'https://api.preciodelaluz.org/v1/prices/avg?zone=PCB';
@@ -54,17 +43,24 @@ class HttpService implements ApiService {
         prices.add(Price.fromJson(item).price!);
       }
       responses.add(array);
-      responses.add(getMaxAndMin(prices));
+      responses.add(_getMaxAndMin(prices, array));
     } else {
       responses.add(convert.jsonDecode(response.body));
     }
     return responses;
   }
 
-  dynamic getMaxAndMin(List<double> prices) {
+  Map<String, dynamic> _getMaxAndMin(List<double> prices, List<Price> list) {
+    var max = prices.reduce((curr, next) => curr > next? curr: next);
+    var maxHour = list.where((element) => element.price == max).toList();
+    var min = prices.reduce((curr, next) => curr < next? curr: next);
+    var minHour = list.where((element) => element.price == min).toList();
     return {
-      'max': prices.reduce((curr, next) => curr > next? curr: next),
-      'min': prices.reduce((curr, next) => curr < next? curr: next)
+      'max': max,
+      'maxHour': maxHour[0].hour,
+      'min': min,
+      'minHour': minHour[0].hour
     };
+
   }
 }
