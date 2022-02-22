@@ -1,14 +1,15 @@
 import 'package:electricity_price/services/api_service.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../service_locator.dart';
 
+
 class HomePage extends StatelessWidget {
   final HttpService _httpService = getIt<HttpService>();
 
-  String formatter = DateFormat('d/M/y').format(new DateTime.now());
-  List<dynamic> get data => data;
+  final String formatter = DateFormat('d/M/y').format(new DateTime.now());
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -40,124 +41,168 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              child: Column(
-                children: [
-                  Column(
-                    children: [
-                      Text('Precio medio del día',
-                          style: TextStyle(
-                              fontSize: 24.0, color: Color(0xff141625))),
-                      Padding(
+              child: AnimatedOpacity(
+                opacity: 1,
+                duration: const Duration(seconds: 5),
+                child: Column(
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical:
+                                MediaQuery.of(context).size.height * .01)),
+                    Container(
                         padding: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width * .2,
-                            right: MediaQuery.of(context).size.width * .2,
-                            bottom: MediaQuery.of(context).size.height * .001),
-                        child: Divider(
-                          color: Colors.black,
-                        ),
+                            left: MediaQuery.of(context).size.width * .01,
+                            bottom: MediaQuery.of(context).size.height * .02),
+                        alignment: Alignment.centerLeft,
+                        child: Text('Evolución del precio para hoy')),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * .03),
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      child: SfSparkLineChart(
+                        color: Color(0xff141625),
+                        trackball: const SparkChartTrackball(
+                            activationMode: SparkChartActivationMode.tap),
+                        labelDisplayMode: SparkChartLabelDisplayMode.high,
+                        highPointColor: Colors.red,
+                        lowPointColor: Colors.green,
+                        marker: const SparkChartMarker(
+                            borderWidth: 3,
+                            size: 5,
+                            shape: SparkChartMarkerShape.circle,
+                            displayMode: SparkChartMarkerDisplayMode.all,
+                            color: Color(0xff141625)),
+                        axisLineWidth: 0,
+                        data: <double>[...snapshot.data[2]],
                       ),
-                      Text(
-                        '${snapshot.data[2]['price'] / 1000} €/kvh',
-                        style:
-                            TextStyle(fontSize: 24.0, color: Colors.lightBlue),
-                      )
-                    ],
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * .01,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * .02),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical:
+                                MediaQuery.of(context).size.height * .02)),
+                    Column(
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Precio más bajo',
-                              style: TextStyle(
-                                  fontSize: 20.0, color: Color(0xff141625)),
-                            ),
-                            Text(
-                              '${snapshot.data[1]['min'] / 1000} €/kvh',
-                              style: TextStyle(
-                                  fontSize: 24.0, color: Colors.green),
-                            ),
-                            _formatHour(snapshot.data[1]['minHour']),
-                          ],
+                        Text('Precio medio del día',
+                            style: TextStyle(
+                                fontSize: 24.0, color: Color(0xff141625))),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width * .2,
+                              right: MediaQuery.of(context).size.width * .2,
+                              bottom:
+                                  MediaQuery.of(context).size.height * .001),
+                          child: Divider(
+                            color: Colors.black,
+                          ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Precio más alto',
-                              style: TextStyle(
-                                  fontSize: 20.0, color: Color(0xff141625)),
-                            ),
-                            Text(
-                              '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kvh',
-                              style:
-                                  TextStyle(fontSize: 24.0, color: Colors.red),
-                            ),
-                            _formatHour(snapshot.data[1]['maxHour']),
-                          ],
+                        Text(
+                          '${snapshot.data[3]['price'] / 1000} €/kvh',
+                          style: TextStyle(
+                              fontSize: 24.0, color: Colors.lightBlue),
                         )
                       ],
                     ),
-                  ),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * 0.02,
-                          vertical: MediaQuery.of(context).size.height * 0.02),
-                      child: Text('Precio del Kwh por horas: ',
-                          style: TextStyle(
-                              fontSize: 20.0, color: Color(0xff141625))),
+                    Container(
+                      height: MediaQuery.of(context).size.height * .01,
                     ),
-                  ),
-                  Container(
-                    child: Expanded(
-                      child: ListView.builder(
-                        itemCount: snapshot.data[0].length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                              height: MediaQuery.of(context).size.height * .04,
-                              color: snapshot.data[0][index].price ==
-                                      snapshot.data[1]['min']
-                                  ? Colors.amber
-                                  : Colors.transparent,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(),
-                                  Icon(
-                                    Icons.watch_later_outlined,
-                                    color: snapshot.data[0][index].isCheap
-                                        ? Colors.green[500]
-                                        : Colors.red[300],
-                                  ),
-                                  _formatHour(snapshot.data[0][index].hour),
-                                  Text(
-                                    '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
-                                    style: TextStyle(
-                                        color: snapshot.data[0][index].isCheap
-                                            ? Colors.green[500]
-                                            : Colors.red[300]),
-                                  ),
-                                  Container()
-                                ],
-                              ));
-                        },
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * .02),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Precio más bajo',
+                                style: TextStyle(
+                                    fontSize: 20.0, color: Color(0xff141625)),
+                              ),
+                              Text(
+                                '${snapshot.data[1]['min'] / 1000} €/kvh',
+                                style: TextStyle(
+                                    fontSize: 24.0, color: Colors.green),
+                              ),
+                              _formatHour(snapshot.data[1]['minHour']),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Precio más alto',
+                                style: TextStyle(
+                                    fontSize: 20.0, color: Color(0xff141625)),
+                              ),
+                              Text(
+                                '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kvh',
+                                style: TextStyle(
+                                    fontSize: 24.0, color: Colors.red),
+                              ),
+                              _formatHour(snapshot.data[1]['maxHour']),
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom))
-                ],
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.02,
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.02),
+                        child: Text('Precio del Kwh por horas: ',
+                            style: TextStyle(
+                                fontSize: 20.0, color: Color(0xff141625))),
+                      ),
+                    ),
+                    Container(
+                      child: Expanded(
+                        child: ListView.builder(
+                          itemCount: snapshot.data[0].length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                                height:
+                                    MediaQuery.of(context).size.height * .04,
+                                color: snapshot.data[0][index].price ==
+                                        snapshot.data[1]['min']
+                                    ? Colors.amber
+                                    : Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(),
+                                    Icon(
+                                      Icons.watch_later_outlined,
+                                      color: snapshot.data[0][index].isCheap
+                                          ? Colors.green[500]
+                                          : Colors.red[300],
+                                    ),
+                                    _formatHour(snapshot.data[0][index].hour),
+                                    Text(
+                                      '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
+                                      style: TextStyle(
+                                          color: snapshot.data[0][index].isCheap
+                                              ? Colors.green[500]
+                                              : Colors.red[300]),
+                                    ),
+                                    Container()
+                                  ],
+                                ));
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom))
+                  ],
+                ),
               ),
             ),
           );

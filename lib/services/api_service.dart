@@ -44,6 +44,7 @@ class HttpService implements ApiService {
       }
       responses.add(array);
       responses.add(_getMaxAndMin(prices, array));
+      responses.add(prices.map((e) => double.parse((e / 1000).toStringAsFixed(5))));
     } else {
       responses.add(convert.jsonDecode(response.body));
     }

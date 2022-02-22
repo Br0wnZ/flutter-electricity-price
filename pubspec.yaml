@@ -32,6 +32,7 @@ dependencies:
   shared_preferences: ^2.0.13
   get_it: ^7.2.0
   intl: ^0.17.0
+  syncfusion_flutter_charts: ^19.4.53
 
 dev_dependencies:
   flutter_test:
