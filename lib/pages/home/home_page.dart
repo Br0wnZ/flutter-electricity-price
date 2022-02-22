@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _httpService.getData(),
+      future: _httpService.getAllData(),
       initialData: [],
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -24,77 +24,150 @@ class HomePage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               elevation: 8.0,
-              title: Text(
-                  'Precio medio: ${snapshot.data[2]['price']} €/Mvh'),
-                  actions: [
-                    Padding(
-                      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .02),
-                      child: Text('$formatter'),
-                    )
-                  ],
+              title: Text('Precio para $formatter'),
             ),
-            body: Column(
-              children: [
-                Container(
-                  alignment: Alignment.topLeft,
-                  color: Colors.blue[200],
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.02,
-                        vertical: MediaQuery.of(context).size.height * 0.02),
-                    child: Text(
-                        'Precio más bajo: ${snapshot.data[1]['min']} €/Mvh',
-                        style: TextStyle(fontSize: 24.0)),
-                  ),
+            body: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.1, 0.5, 0.7, 0.9],
+                  colors: [
+                    Colors.grey[400]!,
+                    Colors.grey[300]!,
+                    Colors.grey[200]!,
+                    Colors.grey[100]!,
+                  ],
                 ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  color: Colors.blue[500],
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.02,
-                        vertical: MediaQuery.of(context).size.height * 0.02),
-                    child: Text(
-                        'Precio más alto: ${snapshot.data[1]['max']} €/Mvh',
-                        style: TextStyle(fontSize: 24.0)),
+              ),
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+                      Text('Precio medio del día',
+                          style: TextStyle(
+                              fontSize: 24.0, color: Color(0xff141625))),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * .2,
+                            right: MediaQuery.of(context).size.width * .2,
+                            bottom: MediaQuery.of(context).size.height * .001),
+                        child: Divider(
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        '${snapshot.data[2]['price'] / 1000} €/kvh',
+                        style:
+                            TextStyle(fontSize: 24.0, color: Colors.lightBlue),
+                      )
+                    ],
                   ),
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.02,
-                        vertical: MediaQuery.of(context).size.height * 0.02),
-                    child: Text('Precio por tramos horarios: ',
-                        style: TextStyle(fontSize: 24.0)),
+                  Container(
+                    height: MediaQuery.of(context).size.height * .01,
                   ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index <= 23)
-                        return Container(
-                          color: snapshot.data[0][index].price ==
-                                  snapshot.data[1]['min']
-                              ? Colors.amber
-                              : snapshot.data[0][index].isCheap
-                                  ? Colors.green[500]
-                                  : Colors.red[300],
-                          child: ListTile(
-                            title: _formatHour(snapshot.data[0][index].hour),
-                            subtitle: Text(
-                              '${snapshot.data[0][index].price} €/Mwh',
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: MediaQuery.of(context).size.width * .02),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Precio más bajo',
+                              style: TextStyle(
+                                  fontSize: 20.0, color: Color(0xff141625)),
                             ),
-                          ),
-                        );
-                      return Container();
-                    },
+                            Text(
+                              '${snapshot.data[1]['min'] / 1000} €/kvh',
+                              style: TextStyle(
+                                  fontSize: 24.0, color: Colors.green),
+                            ),
+                            _formatHour(snapshot.data[1]['minHour']),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Precio más alto',
+                              style: TextStyle(
+                                  fontSize: 20.0, color: Color(0xff141625)),
+                            ),
+                            Text(
+                              '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kvh',
+                              style:
+                                  TextStyle(fontSize: 24.0, color: Colors.red),
+                            ),
+                            _formatHour(snapshot.data[1]['maxHour']),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.02,
+                          vertical: MediaQuery.of(context).size.height * 0.02),
+                      child: Text('Precio del Kwh por horas: ',
+                          style: TextStyle(
+                              fontSize: 20.0, color: Color(0xff141625))),
+                    ),
+                  ),
+                  Container(
+                    child: Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data[0].length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              height: MediaQuery.of(context).size.height * .04,
+                              color: snapshot.data[0][index].price ==
+                                      snapshot.data[1]['min']
+                                  ? Colors.amber
+                                  : Colors.transparent,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(),
+                                  Icon(
+                                    Icons.watch_later_outlined,
+                                    color: snapshot.data[0][index].isCheap
+                                        ? Colors.green[500]
+                                        : Colors.red[300],
+                                  ),
+                                  _formatHour(snapshot.data[0][index].hour),
+                                  Text(
+                                    '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
+                                    style: TextStyle(
+                                        color: snapshot.data[0][index].isCheap
+                                            ? Colors.green[500]
+                                            : Colors.red[300]),
+                                  ),
+                                  Container()
+                                ],
+                              ));
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom))
+                ],
+              ),
             ),
           );
         }
+        // ListTile(
+        //                   title: _formatHour(snapshot.data[0][index].hour),
+        //                   subtitle: Text(
+        //                     '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
+        //                   ),
+        //                 ),
         return Container();
       },
     );
