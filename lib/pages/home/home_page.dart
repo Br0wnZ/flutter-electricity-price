@@ -16,8 +16,7 @@ class HomePage extends StatelessWidget {
       initialData: [],
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Container(
           );
         }
         if (snapshot.hasData) {
