@@ -5,19 +5,9 @@ import 'package:electricity_price/models/price.dart';
 
 abstract class ApiService {
   Future<dynamic> getAllData();
-  Future<dynamic> getAveragePrice();
 }
 
 class HttpService implements ApiService {
-  var url = 'https://api.preciodelaluz.org/v1/prices/all?zone=PCB';
-
-  Future<dynamic> getAveragePrice() async {
-    var url = 'https://api.preciodelaluz.org/v1/prices/avg?zone=PCB';
-
-    var response = await http.get(Uri.parse(url));
-    var jsonResponse = convert.jsonDecode(response.body) as dynamic;
-    return jsonResponse;
-  }
 
   Future<dynamic> getAllData() async {
     var responses = await Future.wait([
