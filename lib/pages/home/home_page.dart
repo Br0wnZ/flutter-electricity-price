@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:electricity_price/pages/home/home_viewmodel.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
-class HomePage extends StatelessWidget {
 
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final String dateTime = DateFormat('d/M/y').format(new DateTime.now());
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<HomeViewModel>.nonReactive(
@@ -16,30 +24,58 @@ class HomePage extends StatelessWidget {
       },
       builder: (BuildContext context, model, Widget? child) {
         return FutureBuilder(
-          future: model.loadData(),
-          initialData: [],
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container();
-            }
-            if (snapshot.hasData) {
-              return Scaffold(
-                appBar: _buildAppBar(dateTime),
-                body: _buildBody(context, snapshot),
-              );
-            }
-            return Container();
+          future: _checkInternetConnection(),
+          initialData: '',
+          builder: (BuildContext context, AsyncSnapshot snap) {
+            return snap.data.toString() == 'true'
+                ? FutureBuilder(
+                    future: model.loadData(),
+                    initialData: [],
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container();
+                      }
+                      if (snapshot.hasData) {
+                        return Scaffold(
+                          appBar: _buildAppBar(dateTime),
+                          body: _buildBody(context, snapshot),
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                : Scaffold(
+                    appBar: _buildAppBar(dateTime),
+                    body: Center(
+                      child: Text('Sin conexión a internet'),
+                    ),
+                    floatingActionButton: FloatingActionButton(
+                        backgroundColor: Color(0xff141625),
+                        child: Icon(
+                          Icons.refresh,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => setState(() {})),
+                  );
           },
         );
       },
     );
   }
 
+  Future<bool> _checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
+  }
+
   AppBar _buildAppBar(String dateTime) =>
       AppBar(elevation: 8.0, title: Text('Precio para $dateTime'));
 
   // ignore: todo
-  // TODO improve this function
   Shimmer _loadShimmer(BuildContext context) => Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
