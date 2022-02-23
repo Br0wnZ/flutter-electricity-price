@@ -1,31 +1,36 @@
-import 'package:electricity_price/services/api_service.dart';
+import 'package:electricity_price/pages/home/home_viewmodel.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../service_locator.dart';
-
+import 'package:stacked/stacked.dart';
 class HomePage extends StatelessWidget {
-  final HttpService _httpService = getIt<HttpService>();
 
   final String dateTime = DateFormat('d/M/y').format(new DateTime.now());
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _httpService.getAllData(),
-      initialData: [],
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container();
-        }
-        if (snapshot.hasData) {
-          return Scaffold(
-            appBar: _buildAppBar(dateTime),
-            body: _buildBody(context, snapshot),
-          );
-        }
-        return Container();
+    return ViewModelBuilder<HomeViewModel>.nonReactive(
+      viewModelBuilder: () {
+        final viewModel = HomeViewModel();
+        return viewModel;
+      },
+      builder: (BuildContext context, model, Widget? child) {
+        return FutureBuilder(
+          future: model.loadData(),
+          initialData: [],
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container();
+            }
+            if (snapshot.hasData) {
+              return Scaffold(
+                appBar: _buildAppBar(dateTime),
+                body: _buildBody(context, snapshot),
+              );
+            }
+            return Container();
+          },
+        );
       },
     );
   }
@@ -33,6 +38,8 @@ class HomePage extends StatelessWidget {
   AppBar _buildAppBar(String dateTime) =>
       AppBar(elevation: 8.0, title: Text('Precio para $dateTime'));
 
+  // ignore: todo
+  // TODO improve this function
   Shimmer _loadShimmer(BuildContext context) => Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
