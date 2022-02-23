@@ -15,7 +15,13 @@ void main() {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  var _isResumed = false;
   final Map<int, Color> colorCodes = {
     50: Color.fromRGBO(147, 205, 72, .1),
     100: Color.fromRGBO(147, 205, 72, .2),
@@ -28,6 +34,38 @@ class MyApp extends StatelessWidget {
     800: Color.fromRGBO(147, 205, 72, .9),
     900: Color.fromRGBO(147, 205, 72, 1),
   };
+
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _isResumed = true;
+        break;
+      case AppLifecycleState.inactive:
+        break;
+      case AppLifecycleState.paused:
+        _isResumed = true;
+        break;
+      case AppLifecycleState.detached:
+        _isResumed = false;
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,19 +74,21 @@ class MyApp extends StatelessWidget {
         primarySwatch: MaterialColor(0xff141625, colorCodes),
       ),
       home: SafeArea(
-        child: SplashScreenView(
-          navigateRoute: HomePage(),
-          pageRouteTransition: PageRouteTransition.SlideTransition,
-          duration: 2000,
-          imageSize: 130,
-          imageSrc: 'assets/images/splash-image.png',
-          backgroundColor: Colors.white,
-          text: "Precio Luz",
-          textType: TextType.ScaleAnimatedText,
-          textStyle: TextStyle(
-            fontSize: 30.0,
-          ),
-        ),
+        child: _isResumed
+            ? HomePage()
+            : SplashScreenView(
+                navigateRoute: HomePage(),
+                pageRouteTransition: PageRouteTransition.SlideTransition,
+                duration: 2000,
+                imageSize: 130,
+                imageSrc: 'assets/images/splash-image.png',
+                backgroundColor: Colors.white,
+                text: "Precio Luz",
+                textType: TextType.ScaleAnimatedText,
+                textStyle: TextStyle(
+                  fontSize: 30.0,
+                ),
+              ),
       ),
     );
   }
