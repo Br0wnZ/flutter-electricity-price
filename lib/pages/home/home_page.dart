@@ -112,22 +112,9 @@ class HomePage extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * .01)),
-            ..._buildPriceChart(context, snapshot),
-            Padding(
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * .02)),
+            _buildPriceChart(context, snapshot),
             _averagePrice(context, snapshot),
-            Container(
-              height: MediaQuery.of(context).size.height * .01,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * .02),
-              child: _minAndMaxPrice(context, snapshot),
-            ),
+            _minAndMaxPrice(context, snapshot),
             Container(
               alignment: Alignment.topLeft,
               child: Padding(
@@ -146,89 +133,111 @@ class HomePage extends StatelessWidget {
         ),
       );
 
-  List<Widget> _buildPriceChart(BuildContext context, AsyncSnapshot snapshot) =>
-      [
-        Container(
-            padding: EdgeInsets.only(
-                left: MediaQuery.of(context).size.width * .01,
-                bottom: MediaQuery.of(context).size.height * .02),
-            alignment: Alignment.centerLeft,
-            child: Text('Evolución del precio para hoy')),
-        Container(
+  Card _buildPriceChart(BuildContext context, AsyncSnapshot snapshot) => Card(
+        color: Colors.white.withOpacity(.6),
+        elevation: 8.0,
+        child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * .03),
-          height: MediaQuery.of(context).size.height * 0.1,
-          child: SfSparkLineChart(
-            color: Color(0xff141625),
-            trackball: const SparkChartTrackball(
-                activationMode: SparkChartActivationMode.tap),
-            labelDisplayMode: SparkChartLabelDisplayMode.high,
-            highPointColor: Colors.red,
-            lowPointColor: Colors.green,
-            marker: const SparkChartMarker(
-                borderWidth: 3,
-                size: 5,
-                shape: SparkChartMarkerShape.circle,
-                displayMode: SparkChartMarkerDisplayMode.all,
-                color: Color(0xff141625)),
-            axisLineWidth: 0,
-            data: <double>[...snapshot.data[2]],
-          ),
+              vertical: MediaQuery.of(context).size.height * .02),
+          child: Column(children: [
+            Container(
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * .01,
+                    bottom: MediaQuery.of(context).size.height * .02),
+                alignment: Alignment.centerLeft,
+                child: Text('Evolución del precio para hoy')),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * .03),
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: SfSparkLineChart(
+                color: Color(0xff141625),
+                trackball: const SparkChartTrackball(
+                    activationMode: SparkChartActivationMode.tap),
+                labelDisplayMode: SparkChartLabelDisplayMode.high,
+                highPointColor: Colors.red,
+                lowPointColor: Colors.green,
+                marker: const SparkChartMarker(
+                    borderWidth: 3,
+                    size: 5,
+                    shape: SparkChartMarkerShape.circle,
+                    displayMode: SparkChartMarkerDisplayMode.all,
+                    color: Color(0xff141625)),
+                axisLineWidth: 0,
+                data: <double>[...snapshot.data[2]],
+              ),
+            )
+          ]),
         ),
-      ];
-
-  Column _averagePrice(BuildContext context, AsyncSnapshot snapshot) => Column(
-        children: [
-          Text('Precio medio del día',
-              style: TextStyle(fontSize: 24.0, color: Color(0xff141625))),
-          Padding(
-            padding: EdgeInsets.only(
-                left: MediaQuery.of(context).size.width * .2,
-                right: MediaQuery.of(context).size.width * .2,
-                bottom: MediaQuery.of(context).size.height * .001),
-            child: Divider(
-              color: Colors.black,
-            ),
-          ),
-          Text(
-            '${snapshot.data[3]['price'] / 1000} €/kwh',
-            style: TextStyle(fontSize: 24.0, color: Colors.lightBlue),
-          )
-        ],
       );
 
-  Row _minAndMaxPrice(BuildContext context, AsyncSnapshot snapshot) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+  Card _averagePrice(BuildContext context, AsyncSnapshot snapshot) => Card(
+        elevation: 8.0,
+        color: Colors.white.withOpacity(.6),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height * .02),
+          child: Column(
             children: [
-              Text(
-                'Precio más bajo',
-                style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
+              Text('Precio medio del día',
+                  style: TextStyle(fontSize: 24.0, color: Color(0xff141625))),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * .2,
+                    right: MediaQuery.of(context).size.width * .2,
+                    bottom: MediaQuery.of(context).size.height * .001),
+                child: Divider(
+                  color: Colors.black,
+                ),
               ),
               Text(
-                '${snapshot.data[1]['min'] / 1000} €/kwh',
-                style: TextStyle(fontSize: 24.0, color: Colors.green),
-              ),
-              _formatHour(snapshot.data[1]['minHour']),
+                '${(snapshot.data[3]['price'] / 1000).toStringAsFixed(5)} €/kwh',
+                style: TextStyle(fontSize: 24.0, color: Colors.lightBlue),
+              )
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      );
+
+  Card _minAndMaxPrice(BuildContext context, AsyncSnapshot snapshot) => Card(
+        elevation: 8.0,
+        color: Colors.white.withOpacity(.6),
+        child: Padding(
+          padding: EdgeInsets.all(MediaQuery.of(context).size.width * .02),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Precio más alto',
-                style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Precio más bajo',
+                    style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
+                  ),
+                  Text(
+                    '${(snapshot.data[1]['min'] / 1000).toStringAsFixed(5)} €/kwh',
+                    style: TextStyle(fontSize: 24.0, color: Colors.green),
+                  ),
+                  _formatHour(snapshot.data[1]['minHour']),
+                ],
               ),
-              Text(
-                '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kwh',
-                style: TextStyle(fontSize: 24.0, color: Colors.red),
-              ),
-              _formatHour(snapshot.data[1]['maxHour']),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Precio más alto',
+                    style: TextStyle(fontSize: 20.0, color: Color(0xff141625)),
+                  ),
+                  Text(
+                    '${(snapshot.data[1]['max'] / 1000).toStringAsFixed(5)} €/kwh',
+                    style: TextStyle(fontSize: 24.0, color: Colors.red),
+                  ),
+                  _formatHour(snapshot.data[1]['maxHour']),
+                ],
+              )
             ],
-          )
-        ],
+          ),
+        ),
       );
 
   Container _hourlyPrices(BuildContext context, AsyncSnapshot snapshot) =>
@@ -236,6 +245,7 @@ class HomePage extends StatelessWidget {
         child: Expanded(
           child: Scrollbar(
             child: ListView.builder(
+              physics: BouncingScrollPhysics(),
               itemCount: snapshot.data[0].length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
