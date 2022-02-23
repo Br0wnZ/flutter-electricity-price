@@ -69,6 +69,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Precio Luz',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xff141625, colorCodes),
