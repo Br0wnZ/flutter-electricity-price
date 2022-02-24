@@ -12,8 +12,22 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final String dateTime = DateFormat('d/M/y').format(new DateTime.now());
+
+  late AnimationController animation;
+  late Animation<double> _fadeInFadeOut;
+
+  @override
+  void initState() {
+    super.initState();
+    animation = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    );
+    _fadeInFadeOut = Tween<double>(begin: 0.0, end: 1).animate(animation);
+    animation.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +51,11 @@ class _HomePageState extends State<HomePage> {
                       }
                       if (snapshot.hasData) {
                         return Scaffold(
-                          appBar: _buildAppBar(dateTime),
-                          body: _buildBody(context, snapshot),
-                        );
+                            appBar: _buildAppBar(dateTime),
+                            body: FadeTransition(
+                              opacity: _fadeInFadeOut,
+                              child: _buildBody(context, snapshot),
+                            ));
                       }
                       return Container();
                     },
