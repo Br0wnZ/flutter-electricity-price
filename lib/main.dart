@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       debugShowCheckedModeBanner: false,
       title: 'Precio Luz',
       theme: ThemeData(
-        primarySwatch: MaterialColor(0xff141625, colorCodes),
+        primarySwatch: MaterialColor(0xff3879b8, colorCodes),
       ),
       home: SafeArea(
         child: _isResumed
@@ -81,8 +81,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 navigateRoute: HomePage(),
                 pageRouteTransition: PageRouteTransition.SlideTransition,
                 duration: 2000,
-                imageSize: 130,
-                imageSrc: 'assets/images/splash-image.png',
+                imageSize: 400,
+                imageSrc: 'assets/images/splash-image.webp',
                 backgroundColor: Colors.white,
                 text: "Precio Luz",
                 textType: TextType.ScaleAnimatedText,
