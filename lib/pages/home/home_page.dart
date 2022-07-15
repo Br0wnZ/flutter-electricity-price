@@ -42,13 +42,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (prefs.getBool('firstTime') == null) {
       Future.delayed(Duration(seconds: 1), () {
         Fluttertoast.showToast(
-          msg:
-              '! Mantén presionado sobre la hora que desees para recibir una notificación',
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.blue
-        );
+            msg:
+                '! Mantén presionado sobre la hora que desees para recibir una notificación',
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.blue);
         prefs.setBool('firstTime', false);
       });
     }
@@ -395,6 +394,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             int.parse(data[0][index].hour.split('-')[0]),
             'Hora de encenderlo todo',
             'El precio de la luz ahora es de ${(data[0][index].price / 1000).toStringAsFixed(5)} €/kwh');
+        if (data[0][index].price == data[1]['min']) {
+          await NotificationService().zonedScheduleNotification(
+              2,
+              int.parse(data[1]['minHour']),
+              'Tenemos buenas noticias',
+              'El precio de la luz ahora durante la próxima hora será el más barato de hoy. ${int.parse((data[1]['min']) / 1000).toStringAsFixed(5)} €/kwh');
+        }
         _showToastMessage(bool, result, data, index);
         selectedIndex.value = index;
         showNotification.value = true;
