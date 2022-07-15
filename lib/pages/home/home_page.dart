@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:electricity_price/custom_widgets/glass.dart';
 import 'package:electricity_price/pages/home/home_viewmodel.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
@@ -375,14 +376,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             int.parse(data[0][index].hour.split('-')[0]),
             'Hora de encenderlo todo',
             'El precio de la luz ahora es de ${(data[0][index].price / 1000).toStringAsFixed(5)} €/kwh');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result == -1
-                ? 'No puedes añadir una notificación en un tiempo pasado'
-                : 'Notificación añadida con éxito para las ${data[0][index].hour.split('-')[0]}:00'),
-          ),
-        );
+        _showToastMessage(bool, result, data, index);
         selectedIndex.value = index;
         showNotification.value = true;
       },
@@ -418,6 +412,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           )),
     );
   }
+
+  void _showToastMessage(bool, result, dynamic data, int index) =>
+      Fluttertoast.showToast(
+          msg: result == -1
+              ? 'No puedes añadir una notificación en un tiempo pasado'
+              : 'Notificación añadida con éxito para las ${data[0][index].hour.split('-')[0]}:00h',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1);
 
   Text _formatHour(String hour) {
     var from = hour.split('-')[0];
