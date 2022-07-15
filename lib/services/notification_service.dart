@@ -41,7 +41,7 @@ class NotificationService {
   Future zonedScheduleNotification(
       int id, int hour, String title, String body) async {
     DateTime now = new DateTime.now();
-    DateTime date = new DateTime(now.year, now.month, now.day, hour, 25);
+    DateTime date = new DateTime(now.year, now.month, now.day, hour, 0);
     print(date.toString());
     print(tz.TZDateTime.parse(
             tz.getLocation(await FlutterNativeTimezone.getLocalTimezone()),
