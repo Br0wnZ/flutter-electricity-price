@@ -1,14 +1,10 @@
 import 'package:electricity_price/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:electricity_price/service_locator.dart';
-
 import 'package:electricity_price/pages/home/home_page.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,11 +15,6 @@ Future<void> main() async {
       .then((_) {
     runApp(MyApp());
   });
-}
-
-Future<void> configureLocalTimeZone() async {
-  final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-  tz.setLocalLocation(tz.getLocation(currentTimeZone));
 }
 
 class MyApp extends StatefulWidget {
@@ -95,7 +86,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 imageSize: 400,
                 imageSrc: 'assets/images/splash-image.webp',
                 backgroundColor: Colors.white,
-                text: "Precio Luz",
+                text: "By Bubulkapp",
                 textType: TextType.ScaleAnimatedText,
                 textStyle: TextStyle(
                   fontSize: 30.0,
