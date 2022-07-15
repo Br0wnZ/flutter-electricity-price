@@ -401,7 +401,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               'Tenemos buenas noticias',
               'El precio de la luz ahora durante la próxima hora será el más barato de hoy. ${int.parse((data[1]['min']) / 1000).toStringAsFixed(5)} €/kwh');
         }
-        _showToastMessage(bool, result, data, index);
+        _showToastMessage(result, data, index);
         selectedIndex.value = index;
         showNotification.value = true;
       },
@@ -438,7 +438,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void _showToastMessage(bool, result, dynamic data, int index) =>
+  void _showToastMessage(dynamic result, dynamic data, int index) =>
       Fluttertoast.showToast(
           msg: result == -1
               ? 'No puedes añadir una notificación en un tiempo pasado'
