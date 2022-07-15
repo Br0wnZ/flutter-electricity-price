@@ -1,18 +1,29 @@
+import 'package:electricity_price/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:electricity_price/service_locator.dart';
 
 import 'package:electricity_price/pages/home/home_page.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupServiceLocator();
+  NotificationService().initNotification();
+  tz.initializeTimeZones();
+  await setupServiceLocator();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(MyApp());
   });
+}
+
+Future<void> configureLocalTimeZone() async {
+  final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(currentTimeZone));
 }
 
 class MyApp extends StatefulWidget {
@@ -37,13 +48,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

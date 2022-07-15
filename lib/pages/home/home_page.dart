@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../services/notification_service.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,6 +20,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late AnimationController animation;
   late Animation<double> _fadeInFadeOut;
+  ValueNotifier<bool> showNotification = ValueNotifier(false);
+  ValueNotifier<int> selectedIndex = ValueNotifier(-1);
 
   @override
   void initState() {
@@ -352,33 +356,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data[0].length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            height: MediaQuery.of(context).size.height * .04,
-                            color: snapshot.data[0][index].price ==
-                                    snapshot.data[1]['min']
-                                ? Colors.amber
-                                : Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(),
-                                Icon(
-                                  Icons.watch_later_outlined,
-                                  color: snapshot.data[0][index].isCheap
-                                      ? Colors.green[500]
-                                      : Colors.red[300],
-                                ),
-                                _formatHour(snapshot.data[0][index].hour),
-                                Text(
-                                  '${(snapshot.data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
-                                  style: TextStyle(
-                                      color: snapshot.data[0][index].isCheap
-                                          ? Colors.green[500]
-                                          : Colors.red[300]),
-                                ),
-                                Container()
-                              ],
-                            ));
+                        return _buidItemList(snapshot.data, index);
                       },
                     ),
                   ),
@@ -388,6 +366,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
       );
+
+  GestureDetector _buidItemList(dynamic data, int index) {
+    return GestureDetector(
+      onLongPress: () async {
+        var result = await NotificationService().zonedScheduleNotification(
+            1,
+            int.parse(data[0][index].hour.split('-')[0]),
+            'Hora de encenderlo todo',
+            'El precio de la luz ahora es de ${(data[0][index].price / 1000).toStringAsFixed(5)} €/kwh');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result == -1
+                ? 'No puedes añadir una notificación en un tiempo pasado'
+                : 'Notificación añadida con éxito para las ${data[0][index].hour.split('-')[0]}:00'),
+          ),
+        );
+        selectedIndex.value = index;
+        showNotification.value = true;
+      },
+      child: Container(
+          height: MediaQuery.of(context).size.height * .04,
+          color: data[0][index].price == data[1]['min']
+              ? Colors.amber
+              : Colors.transparent,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * .02),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(),
+                Icon(
+                  Icons.watch_later_outlined,
+                  color: data[0][index].isCheap
+                      ? Colors.green[500]
+                      : Colors.red[300],
+                ),
+                _formatHour(data[0][index].hour),
+                Text(
+                  '${(data[0][index].price / 1000).toStringAsFixed(5)} €/kwh',
+                  style: TextStyle(
+                      color: data[0][index].isCheap
+                          ? Colors.green[500]
+                          : Colors.red[300]),
+                ),
+                Container()
+              ],
+            ),
+          )),
+    );
+  }
 
   Text _formatHour(String hour) {
     var from = hour.split('-')[0];

@@ -37,6 +37,9 @@ dependencies:
   shimmer: ^2.0.0
   flutter_launcher_icons: ^0.9.2
   stacked: ^2.2.8
+  flutter_local_notifications: ^9.7.0
+  timezone: ^0.8.0
+  flutter_native_timezone: ^2.0.0
 
 dev_dependencies:
   flutter_test:
