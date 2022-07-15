@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:electricity_price/custom_widgets/glass.dart';
 import 'package:electricity_price/pages/home/home_viewmodel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     _fadeInFadeOut = Tween<double>(begin: 0.0, end: 1).animate(animation);
     animation.forward();
+    _showTips();
+  }
+
+  Future<void> _showTips() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('firstTime') == null) {
+      Future.delayed(Duration(seconds: 1), () {
+        Fluttertoast.showToast(
+          msg:
+              '! Mantén presionado sobre la hora que desees para recibir una notificación',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.blue
+        );
+        prefs.setBool('firstTime', false);
+      });
+    }
   }
 
   @override
