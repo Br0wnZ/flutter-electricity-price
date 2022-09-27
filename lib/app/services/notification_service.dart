@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/timezone.dart';
 
 class NotificationService {
   static final NotificationService _notificationService =
@@ -42,11 +40,6 @@ class NotificationService {
       int id, int hour, String title, String body) async {
     DateTime now = new DateTime.now();
     DateTime date = new DateTime(now.year, now.month, now.day, hour, 0);
-    print(date.toString());
-    print(tz.TZDateTime.parse(
-            tz.getLocation(await FlutterNativeTimezone.getLocalTimezone()),
-            date.toString())
-        .toString());
     try {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id,

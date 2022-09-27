@@ -1,20 +1,35 @@
-import 'package:electricity_price/services/notification_service.dart';
+import 'package:electricity_price/app/services/notification_service.dart';
+import 'package:electricity_price/app/shared/utils/interceptors/rest_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:electricity_price/service_locator.dart';
-import 'package:electricity_price/pages/home/home_page.dart';
+import 'package:electricity_price/app/home/pages/home_page.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:dio/dio.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'app/shared/utils/environment/env.dart';
+import 'env/environment_dev.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService().initNotification();
+  const String envName =
+      String.fromEnvironment('ENVIRONMENT', defaultValue: EnvDev.name);
+  ENV().initConfig(envName);
+  final dio = Dio(BaseOptions(baseUrl: ENV().config.basePath));
+  dio.interceptors.add(RestInterceptor());
   tz.initializeTimeZones();
-  await setupServiceLocator();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(MyApp());
-  });
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+    (_) {
+      runApp(
+        RepositoryProvider(
+          create: (context) => dio,
+          child: MyApp(),
+        ),
+      );
+    },
+  );
 }
 
 class MyApp extends StatefulWidget {
