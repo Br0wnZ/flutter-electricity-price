@@ -10,9 +10,32 @@ import 'package:electricity_price/app/home/widgets/chart.dart';
 import 'package:electricity_price/app/home/widgets/mind_and_max.dart';
 import 'package:electricity_price/app/home/widgets/price_llist.dart';
 
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  late AnimationController _animation;
+  late Animation<double> _fadeInFadeOut;
+
+  @override
+  void initState() {
+    super.initState();
+    _animation = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    )..forward();
+    _fadeInFadeOut = Tween<double>(begin: 0.0, end: 1).animate(_animation);
+  }
+
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +47,11 @@ class HomePage extends StatelessWidget {
         body: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.light
               .copyWith(statusBarColor: Theme.of(context).primaryColor),
-          child: SafeArea(
-            child: MainContent(),
+          child: FadeTransition(
+            opacity: _fadeInFadeOut,
+            child: SafeArea(
+              child: MainContent(),
+            ),
           ),
         ),
       ),
